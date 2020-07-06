@@ -12,14 +12,18 @@ class UnalignedDataset(BaseDataset):
     """
     This dataset class can load unaligned/unpaired datasets.
 
-    It requires two directories to host training images from domain A '/path/to/data/trainA'
+    It requires two directories to host training images from domain A '/path/to/data/trainA_X'
     and from domain B '/path/to/data/trainB' respectively.
     You can train the model with the dataset flag '--dataroot /path/to/data'.
     Similarly, you need to prepare two directories:
-    '/path/to/data/testA' and '/path/to/data/testB' during test time.
+    '/path/to/data/testA_in' and '/path/to/data/testB' during test time.
        
     Since we have created 2 models indoor and outdoor, we have two separate folders for their training dataset. 
-    Use opt.path_variable to modify. While trainB remains same for both indoor and outdoor model.  
+    Use opt.path_variable to modify. While trainB remains same for both indoor and outdoor model.
+    (Path variable : 'A_in' for indoor and 'A_out' for outdoor)
+    
+    trainX images (RGB) are png/jpg files
+    trainB images (HSI) are hdf5 files
     """
 
     def __init__(self, opt):
@@ -71,12 +75,13 @@ class UnalignedDataset(BaseDataset):
             A_img = np.array(Image.open(A_path).convert('RGB'))
         except:
             print("Error in file " + A_path)
+        
         try:
             B_img = hsi_loader(B_path)
         except KeyError:
             print("Error in file " + B_path)
        
-        A_img = self.stack(A_img)
+        A_img = self.stack(A_img) # stacking to make a 31 channel input
        
         A = hsi_normalize(A_img, max_= 1, min_ = 0) # max_ and min_ are max and min values of pixel range
         B = hsi_normalize(B_img, max_= 4096, min_=0) # max_ and min_ are max and min values of pixel range
@@ -85,6 +90,11 @@ class UnalignedDataset(BaseDataset):
         return {'A': A, 'B': B, 'A_paths': A_path, 'B_paths': B_path}
     
     def stack(self, img):
+        """
+        This functions stacks the original 3 channel input to form a 31 channel input. 
+        For more details refer paper Eq 1. 
+        
+        """
         
         _R = img[:,:,0]
         _G = img[:,:,1]
@@ -95,7 +105,7 @@ class UnalignedDataset(BaseDataset):
         B_img = np.stack((_B,)*11, axis=2)
 
         hsi_img = np.concatenate((B_img, G_img, R_img), axis=2)
-        hsi_img = resize(hsi_img, (256, 256)) # resize, normalizes images to 0-1. If you want to keep same pixel values, use 
+        hsi_img = resize(hsi_img, (256, 256)) # resize, normalizes images to 0-1. If you want to keep same pixel values, use 'preserve_range = True argument'
         hsi_img = np.einsum('abc->cab', hsi_img)
         return hsi_img
     

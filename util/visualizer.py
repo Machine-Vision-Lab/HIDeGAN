@@ -95,12 +95,7 @@ class Visualizer():
         self.port = opt.display_port
         self.saved = False
         self.loss_flag = True
-        self.metric_flag = True
-        # create a logging file to store training losses
-        self.metric_log = os.path.join(opt.checkpoints_dir, opt.name, 'metric_log.csv')
-        with open(self.metric_log, "w") as log_file:
-            now = time.strftime("%c")
-            log_file.write('================ Metrics(%s) ================\n' % now)
+        
         if self.display_id > 0:  # connect to a visdom server given <display_port> and <display_server>
             import visdom
             self.ncols = opt.display_ncols
@@ -114,7 +109,8 @@ class Visualizer():
             print('create web directory %s...' % self.web_dir)
             util.mkdirs([self.web_dir, self.img_dir])
         # create a logging file to store training losses
-        self.log_csv = os.path.join(opt.checkpoints_dir, opt.name, 'loss_log.csv')
+        now = time.strftime("%c")
+        self.log_csv = os.path.join(opt.checkpoints_dir, opt.name, 'loss_log_(%s).csv'%now)
         with open(self.log_csv, "w") as log_file:
             now = time.strftime("%c")
             log_file.write('================ Training Loss (%s) ================\n' % now)
@@ -276,22 +272,7 @@ class Visualizer():
 #             log_file.write('%s\n' % message2print)  # save the message
 
 
-    def print_metrics(self,i, psnr, ssim, mape):    
-        #if epoch % opt.compute_metric_freq == 0:
-        message2print = '(epoch : %d, psnr: %.3f, ssim: %.3f, mape: %.3f) ' % (i,psnr, ssim, mape)
-#         with open(self.metric_log, "a") as log_file:
-#             log_file.write('%s\n' % message)
-        print(message2print)
-    
-        header = 'epoch, psnr, ssim, mape'
-        if(self.metric_flag):
-            with open(self.metric_log, "a") as log_file:
-                log_file.write('%s\n' % header)
-            self.metric_flag = False
-                
-        message = '%d, %.3f, %.3f, %.3f' % (i,psnr,ssim,mape)
-        with open(self.metric_log, "a") as log_file:
-                log_file.write('%s\n' % message)
+   
         
 
         

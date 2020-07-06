@@ -7,7 +7,6 @@ import os
 import h5py
 from numpy import floor
 
-num_channels = 31
 
 def tensor2hsi(input_image, imtype=np.float32):
     """Converts a Tensor array into a numpy array.
@@ -27,7 +26,7 @@ def tensor2hsi(input_image, imtype=np.float32):
             image_numpy = np.tile(image_numpy, (3, 1, 1))
         elif image_numpy.shape[0] == 3: # a rgb image
             image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
-        elif image_numpy.shape[0] == num_channels: # maybe something else, for example a hyperspectral image
+        elif image_numpy.shape[0] == 31 : # maybe something else, for example a hyperspectral image
             image_numpy = hsi_normalize(image_numpy, denormalize=True)
             image_numpy = np.transpose(image_numpy, (1, 2, 0))
             
@@ -108,7 +107,7 @@ def print_numpy(x, val=True, shp=False):
         print('mean = %3.3f, min = %3.3f, max = %3.3f, median = %3.3f, std=%3.3f' % (
             np.mean(x), np.min(x), np.max(x), np.median(x), np.std(x)))
 
-def hsi_normalize(data, max_=4096, min_ = 0 denormalize=False):
+def hsi_normalize(data, max_=4096, min_ = 0, denormalize=False):
     """
     Using this custom normalizer for RGB and HSI images.  
     Normalizing to -1to1. It also denormalizes, with denormalize = True)
@@ -133,8 +132,7 @@ def hsi_loader(path):
     
     with h5py.File(path, 'r') as f:
         d = np.array(f['data'])
-        step = int(floor(32/num_channels))
-        hs_data = np.einsum('abc -> cab',d[:,:,::step])
+        hs_data = np.einsum('abc -> cab',d)
     return hs_data
 
 def mkdirs(paths):
