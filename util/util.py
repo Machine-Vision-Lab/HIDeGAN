@@ -135,6 +135,14 @@ def hsi_loader(path):
         hs_data = np.einsum('abc -> cab',d)
     return hs_data
 
+def combined_data_loader(path):
+     
+    with h5py.File(path, 'r') as f:
+        A = np.einsum('abc -> cab',f.get('hazy_hsi').value)
+        B = f.get('clean_rgb').value   
+        C = f.get('hazy_rgb').value
+        return A,B,C
+    
 def mkdirs(paths):
     """create empty directories if they don't exist
 

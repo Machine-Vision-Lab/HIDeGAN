@@ -3,7 +3,6 @@ import itertools
 from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
-# from .vgg import Vgg16
 from data.base_dataset import get_transform
 from sklearn.metrics import mean_squared_error,log_loss
 import numpy as np
@@ -14,7 +13,6 @@ import os
 from skimage import color
 from skimage.feature import canny
 from sklearn.metrics.pairwise import cosine_similarity
-from util.metrics import psnr, ssim 
 from util.util import hsi_normalize
 import PIL
 

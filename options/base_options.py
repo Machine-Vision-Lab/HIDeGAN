@@ -28,12 +28,8 @@ class BaseOptions():
         # model parameters
         parser.add_argument('--model', type=str, default='r2hcycle', help='chooses which model to use. [cycle_gan | pix2pix | test | colorization]')
         parser.add_argument('--input_nc', type=int, default=31, help='# of input image channels: 3 for RGB and 1 for grayscale and 31 for HSI/stacked RGB')
-#         parser.add_argument('--input_nc_rgb', type=int, default=3, help='# of input image channels: 3 for RGB and 1 for grayscale')
-#         parser.add_argument('--input_nc_hsi', type=int, default=31, help='# of input image channels: 31 for HSI and 1 for grayscale')
 
         parser.add_argument('--output_nc', type=int, default=31, help='# of output image channels: 3 for RGB and 1 for grayscale and 31 for HSI')
-#         parser.add_argument('--output_nc_rgb', type=int, default=3, help='# of output image channels: 3 for RGB and 1 for grayscale')
-#         parser.add_argument('--output_nc_hsi', type=int, default=31, help='# of output image channels: 31 for HSI and 1 for grayscale')
         parser.add_argument('--ngf', type=int, default=64, help='# of gen filters in the last conv layer')
         parser.add_argument('--ndf', type=int, default=64, help='# of discrim filters in the first conv layer')
         parser.add_argument('--netD', type=str, default='pixel', help='specify discriminator architecture [basic | n_layers | pixel | 3Dpixel]. The basic model is a 70x70 PatchGAN. n_layers allows you to specify the layers in the discriminator')
